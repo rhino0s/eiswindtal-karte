@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <title>Interaktive Karten - Zehn-Städte & Eiswindtal</title>
+  <style>
+    /* Gemeinsame Styles */
+    .location {
+      z-index: 300;
+      background: none;
+      border: none;
+      box-shadow: none;
+      transition: none;
+      position: absolute;
+      cursor: pointer;
+      border-radius: 50%;
+    }
+    .location:hover {
+      background: none;
+      border: none;
+      box-shadow: none;
+    }
+    .img-btn {
+      width: 96%;
+      height: 48%;
+      cursor: pointer;
+      transition: filter 0.2s;
+    }
+    .img-btn:hover {
+      filter: brightness(1.2);
+    }
+    @keyframes blinken {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0; }
+    }
+    .blinken-marker {
+      animation: blinken 1s steps(2, jump-none) infinite;
+    }
+    .img-btn[disabled], .img-btn.deaktiviert {
+      filter: grayscale(100%);
+      cursor: default;
+      pointer-events: none;
+      opacity: 0.7;
+    }
+    @keyframes huepfen {
+      0%, 100% { transform: translateY(0); }
+      20% { transform: translateY(-30px); }
+      40% { transform: translateY(0); }
+      60% { transform: translateY(-20px); }
+      80% { transform: translateY(0); }
+    }
+    .huepf-bild {
+      animation: huepfen 1.2s infinite;
+    }
+    @keyframes wackeln {
+      0%, 100% { transform: rotate(0deg); }
+      25% { transform: rotate(5deg); }
+      75% { transform: rotate(-5deg); }
+    }
+    .wackel-bild {
+      animation: wackeln 0.6s infinite;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Karte 1 -->
+  <div id="karte1" style="display: block;">
+    <div id="map-container" style="position:relative;">
+    <div id="karten-wrapper" style="position:relative; width:100%;">
+      <img id="Zehn-Städte" src="IWD TT 00.png" alt="Zehn-Städte" style="width:100%;">
+      <!-- Versteckte Bilder über der Karte, mit Animation -->
+      <div id="geheime-bilder" style="display:none; position:absolute; top:0; left:0; width:100%; height:100%; z-index:200;">
+        <img src="Questmarker.png" alt="Questmarker 1" class="huepf-bild"
+             style="position:absolute; top:54.8%; left:25%; width:7.5%;">
+        <img src="Questmarker.png" alt="Questmarker 2" class="huepf-bild"
+             style="position:absolute; top:60.3%; left:72.5%; width:7.5%;">
+        <img src="Questmarker.png" alt="Questmarker 3" class="huepf-bild"
+             style="position:absolute; top:46.5%; left:15%; width:7.5%;">
+      </div>
+      <div id="geruechte-bilder" style="display:none; position:absolute; top:0; left:0; width:100%; height:100%; z-index:201;">
+        <img src="Gerüchtemarker.png" alt="Gerücht 1" class="wackel-bild"
+             style="position:absolute; top:53.8%; left:25%; width:7.5%;">
+        <img src="Gerüchtemarker.png" alt="Gerücht 2" class="wackel-bild"
+             style="position:absolute; top:39.7%; left:72.5%; width:7.5%;">
+        <img src="Gerüchtemarker.png" alt="Gerücht 1" class="wackel-bild"
+             style="position:absolute; top:59.3%; left:72.5%; width:7.5%;">
+      </div>
+    </div>
+    <img src="IWD Marker Bryn Shander.png" alt="Bryn Shander Marker"
+         class="blinken-marker"
+         style="position:absolute; top:-0.5%; left:0%; width:100%; height:100%; z-index:100; pointer-events:none;">
+
+    <!-- Klickbare Orte -->
+    <div class="location" style="top:46.3%; left:10.625%; width:3.75%; height:4.167%;" data-ort="Bremen"></div>
+    <div class="location" style="top:60.8%; left:25%; width:5%; height:5.556%;" data-ort="Bryn Shander"></div>
+    <div class="location" style="top:47.7%; left:73.125%; width:3.75%; height:4.167%;" data-ort="Caer-Dineval"></div>
+    <div class="location" style="top:33.9%; left:80.625%; width:3.75%; height:4.167%;" data-ort="Caer-Konig"></div>
+    <div class="location" style="top:83.6%; left:35.625%; width:3.75%; height:4.167%;" data-ort="Dougans Bucht"></div>
+    <div class="location" style="top:75.3%; left:45.625%; width:3.75%; height:4.167%;" data-ort="Gutanger"></div>
+    <div class="location" style="top:66.3%; left:72.5%; width:5%; height:5.556%;" data-ort="Osthafen"></div>
+    <div class="location" style="top:52.5%; left:15%; width:5%; height:5.556%;" data-ort="Targos"></div>
+    <div class="location" style="top:33.1%; left:40%; width:5%; height:5.556%;" data-ort="Termalaine"></div>
+    <div class="location" style="top:28.3%; left:33.125%; width:3.75%; height:4.167%;" data-ort="Waldheim"></div>
+    <!-- Füge hier weitere Orte hinzu -->
+  </div>
+
+  <div id="button-container" style="display: flex; justify-content: space-between; align-items: stretch; margin-top: 20px;">
+    <div class="button-group left" style="display: flex; flex-direction: column; gap: 20px;">
+      <img src="Button ZS aktiv.png" alt="Zehn-Städte" class="img-btn deaktiviert" style="pointer-events: none;">
+      <img src="Button EWT aktiv.png" alt="Eiswindtal" class="img-btn">
+    </div>
+    <div class="button-group right" style="display: flex; flex-direction: column; gap: 20px;">
+      <img src="Button AQ aktiv.png" alt="Aktive Quests" class="img-btn">
+      <img src="Button GK aktiv.png" alt="Gerüchteküche" class="img-btn">
+    </div>
+  </div>
+
+  <script>
+  function initKarte1() {
+    const ortBilderZS = {
+      "Bremen": "IWD TT Bremen.png",
+      "Bryn Shander": "IWD TT Bryn Shander.png",
+      "Caer-Dineval": "IWD TT Caer-Dineval.png",
+      "Caer-Konig": "IWD TT Caer-Konig.png",
+      "Dougans Bucht": "IWD TT Dougans Bucht.png",
+      "Gutanger": "IWD TT Gutanger.png",
+      "Osthafen": "IWD TT Osthafen.png",
+      "Targos": "IWD TT Targos.png",
+      "Termalaine": "IWD TT Termalaine.png",
+      "Waldheim": "IWD TT Waldheim.png"
+    };
+
+    const hauptBildZS = document.getElementById("Zehn-Städte");
+
+    document.querySelectorAll('#karte1 .location').forEach(function(el) {
+      el.onclick = function() {
+        const ort = el.dataset.ort;
+        if (ortBilderZS[ort]) {
+          hauptBildZS.src = ortBilderZS[ort];
+        }
+      };
+    });
+
+    const button3ZS = document.querySelector('#karte1 img[alt="Aktive Quests"]');
+    const button4ZS = document.querySelector('#karte1 img[alt="Gerüchteküche"]');
+    const geheimeBilderZS = document.getElementById('geheime-bilder');
+    const geruechteBilderZS = document.getElementById('geruechte-bilder');
+    const buttonsZS = document.querySelectorAll('#karte1 .img-btn');
+    let geheimAktivZS = false;
+    let geruechteAktivZS = false;
+
+    button3ZS.onclick = function () {
+      geheimAktivZS = !geheimAktivZS;
+      if (geheimAktivZS) {
+        geheimeBilderZS.style.display = 'block';
+        geruechteBilderZS.style.display = 'none';
+        button3ZS.src = "Button Zurück.png";
+        buttonsZS.forEach(btn => {
+          if (btn !== button3ZS) {
+            btn.style.filter = 'grayscale(100%)';
+            btn.style.opacity = '0.7';
+            btn.style.cursor = 'not-allowed';
+            btn.style.pointerEvents = 'none';
+          }
+        });
+      } else {
+        geheimeBilderZS.style.display = 'none';
+        button3ZS.src = "Button AQ aktiv.png";
+        buttonsZS.forEach(btn => {
+          btn.style.filter = '';
+          btn.style.opacity = '';
+          btn.style.cursor = 'pointer';
+          btn.style.pointerEvents = 'auto';
+        });
+      }
+    };
+
+    button4ZS.onclick = function () {
+      geruechteAktivZS = !geruechteAktivZS;
+      if (geruechteAktivZS) {
+        geruechteBilderZS.style.display = 'block';
+        geheimeBilderZS.style.display = 'none';
+        button4ZS.src = "Button Zurück.png";
+        buttonsZS.forEach(btn => {
+          if (btn !== button4ZS) {
+            btn.style.filter = 'grayscale(100%)';
+            btn.style.opacity = '0.7';
+            btn.style.cursor = 'not-allowed';
+            btn.style.pointerEvents = 'none';
+          }
+        });
+      } else {
+        geruechteBilderZS.style.display = 'none';
+        button4ZS.src = "Button GK aktiv.png";
+        buttonsZS.forEach(btn => {
+          btn.style.filter = '';
+          btn.style.opacity = '';
+          btn.style.cursor = 'pointer';
+          btn.style.pointerEvents = 'auto';
+        });
+      }
+    };
+  }
+</script>
+  </div>
+
+  <!-- Karte 2 -->
+  <div id="karte2" style="display: none;">
+    <div id="map-container-eiswindtal" style="position:relative;">
+    <div id="karten-wrapper-eiswindtal" style="position:relative; width:100%;">
+      <img id="Eiswindtal" src="IWD EWT.png" alt="Eiswindtal" style="width:100%;">
+      <!-- Versteckte Bilder über der Karte, mit Animation -->
+      <div id="geheime-bilder-eiswindtal" style="display:none; position:absolute; top:0; left:0; width:100%; height:100%; z-index:200;">
+        <img src="Questmarker.png" alt="Questmarker 1-eiswindtal" class="huepf-bild"
+             style="position:absolute; top:53.5%; left:36%; width:5%;">
+      </div>
+      <div id="geruechte-bilder-eiswindtal" style="display:none; position:absolute; top:0; left:0; width:100%; height:100%; z-index:201;">
+        <img src="Gerüchtemarker.png" alt="Gerücht 1-eiswindtal" class="wackel-bild"
+             style="position:absolute; top:53.5%; left:36%; width:5%;">
+      </div>
+    </div>
+    <img src="IWD EWT Marker.png" alt="EWT Marker"
+         class="blinken-marker"
+         style="position:absolute; top:-1%; left:0%; width:100%; height:100%; z-index:100; pointer-events:none;">
+
+    <!-- Klickbare Orte -->
+    <div class="location" style="top:45%; left:26%; width:24%; height:30%;" data-ort="Zehn-Städte-eiswindtal"></div>
+    <!-- Füge hier weitere Orte hinzu -->
+  </div>
+
+<script>
+  function initKarte2() {
+    const ortBilder = {
+      "Zehn-Städte-eiswindtal": "IWD EWT ZS.png"
+    };
+    const hauptBild = document.getElementById("Eiswindtal");
+
+    document.querySelectorAll('#karte2 .location').forEach(function(el) {
+      el.onclick = function() {
+        const ort = el.dataset.ort;
+        if (ortBilder[ort]) {
+          hauptBild.src = ortBilder[ort];
+        }
+      };
+    });
+
+    const button3 = document.querySelector('#karte2 img[alt="Aktive Quests-eiswindtal"]');
+    const button4 = document.querySelector('#karte2 img[alt="Gerüchteküche-eiswindtal"]');
+    const geheimeBilder = document.getElementById('geheime-bilder-eiswindtal');
+    const geruechteBilder = document.getElementById('geruechte-bilder-eiswindtal');
+    const buttons = document.querySelectorAll('#karte2 .img-btn');
+    let geheimAktiv = false;
+    let geruechteAktiv = false;
+
+    button3.onclick = function () {
+      geheimAktiv = !geheimAktiv;
+      if (geheimAktiv) {
+        geheimeBilder.style.display = 'block';
+        geruechteBilder.style.display = 'none';
+        button3.src = "Button Zurück.png";
+        buttons.forEach(btn => {
+          if (btn !== button3) {
+            btn.style.filter = 'grayscale(100%)';
+            btn.style.opacity = '0.7';
+            btn.style.cursor = 'not-allowed';
+            btn.style.pointerEvents = 'none';
+          }
+        });
+      } else {
+        geheimeBilder.style.display = 'none';
+        button3.src = "Button AQ aktiv.png";
+        buttons.forEach(btn => {
+          btn.style.filter = '';
+          btn.style.opacity = '';
+          btn.style.cursor = 'pointer';
+          btn.style.pointerEvents = 'auto';
+        });
+      }
+    };
+
+    button4.onclick = function () {
+      geruechteAktiv = !geruechteAktiv;
+      if (geruechteAktiv) {
+        geruechteBilder.style.display = 'block';
+        geheimeBilder.style.display = 'none';
+        button4.src = "Button Zurück.png";
+        buttons.forEach(btn => {
+          if (btn !== button4) {
+            btn.style.filter = 'grayscale(100%)';
+            btn.style.opacity = '0.7';
+            btn.style.cursor = 'not-allowed';
+            btn.style.pointerEvents = 'none';
+          }
+        });
+      } else {
+        geruechteBilder.style.display = 'none';
+        button4.src = "Button GK aktiv.png";
+        buttons.forEach(btn => {
+          btn.style.filter = '';
+          btn.style.opacity = '';
+          btn.style.cursor = 'pointer';
+          btn.style.pointerEvents = 'auto';
+        });
+      }
+    };
+  }
+</script>
+
+
+  <div id="button-container-eiswindtal" style="display: flex; justify-content: space-between; align-items: stretch; margin-top: 20px;">
+    <div class="button-group left-eiswindtal" style="display: flex; flex-direction: column; gap: 20px;">
+      <img src="Button ZS aktiv.png" alt="Zehn-Städte-eiswindtal" class="img-btn">
+      <img src="Button EWT aktiv.png" alt="Eiswindtal-eiswindtal" class="img-btn deaktiviert" style="pointer-events: none;">
+    </div>
+    <div class="button-group right-eiswindtal" style="display: flex; flex-direction: column; gap: 20px;">
+      <img src="Button AQ aktiv.png" alt="Aktive Quests-eiswindtal" class="img-btn">
+      <img src="Button GK aktiv.png" alt="Gerüchteküche-eiswindtal" class="img-btn">
+    </div>
+  </div>
+
+  <script>
+  const karte1 = document.getElementById('karte1');
+  const karte2 = document.getElementById('karte2');
+
+  function showKarte1() {
+    karte2.style.display = 'none';
+    karte1.style.display = 'block';
+    initKarte1();
+  }
+
+  function showKarte2() {
+    karte1.style.display = 'none';
+    karte2.style.display = 'block';
+    initKarte2();
+  }
+
+  document.addEventListener('click', function(e) {
+    if (e.target.matches('img[alt="Eiswindtal"], img[alt="Eiswindtal-eiswindtal"]')) {
+      showKarte2();
+    } else if (e.target.matches('img[alt="Zehn-Städte"], img[alt="Zehn-Städte-eiswindtal"]')) {
+      showKarte1();
+    }
+  });
+
+  // Starte mit Karte 1
+  initKarte1();
+</script>
+  </div>
+</body>
+</html>
