@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <title>Interaktive Karte - Zehn Städte</title>
+  <style>
+    .location {
+      z-index: 300;
+      background: none;;
+      border: none;
+      box-shadow: none;
+      transition: none;
+      position: absolute;
+      cursor: pointer;
+      border-radius: 50%;
+    }
+    .location:hover {
+      background: none;
+      border: none;
+      box-shadow: none;
+    }
+
+    .img-btn {
+      width: 96%;
+      height: 48%;
+      cursor: pointer;
+      transition: filter 0.2s;
+    }
+    .img-btn:hover {
+      filter: brightness(1.2);
+    }
+
+    /* Blinken für Marker */
+    @keyframes blinken {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0; }
+    }
+    .blinken-marker {
+      animation: blinken 1s steps(2, jump-none) infinite;
+    }
+
+    /* Optional: Buttons im deaktivierten Zustand */
+    .img-btn[disabled], .img-btn.deaktiviert {
+      filter: grayscale(100%);
+      cursor: default; /* oder: cursor: none; */
+      pointer-events: none;
+      opacity: 0.7;
+    }
+
+    /* Hüpfen-Animation */
+    @keyframes huepfen {
+      0%, 100% { transform: translateY(0); }
+      20% { transform: translateY(-30px); }
+      40% { transform: translateY(0); }
+      60% { transform: translateY(-20px); }
+      80% { transform: translateY(0); }
+    }
+    .huepf-bild {
+      animation: huepfen 1.2s infinite;
+    }
+    /* Wackeln-Animation */
+    @keyframes wackeln {
+  0%, 100% { transform: rotate(0deg); }
+  25% { transform: rotate(5deg); }
+  75% { transform: rotate(-5deg); }
+}
+.wackel-bild {
+  animation: wackeln 0.6s infinite;
+}
+
+  </style>
+</head>
+<body>
+  <div id="map-container" style="position:relative;">
+    <div id="karten-wrapper" style="position:relative; width:100%;">
+      <img id="Zehn-Städte" src="IWD TT 00.png" alt="Zehn-Städte" style="width:100%;">
+      <!-- Versteckte Bilder über der Karte, mit Animation -->
+      <div id="geheime-bilder" style="display:none; position:absolute; top:0; left:0; width:100%; height:100%; z-index:200;">
+        <img src="Questmarker.png" alt="Questmarker 1" class="huepf-bild"
+             style="position:absolute; top:54.8%; left:25%; width:7.5%;">
+        <img src="Questmarker.png" alt="Questmarker 2" class="huepf-bild"
+             style="position:absolute; top:60.3%; left:72.5%; width:7.5%;">
+        <img src="Questmarker.png" alt="Questmarker 3" class="huepf-bild"
+             style="position:absolute; top:46.5%; left:15%; width:7.5%;">
+      </div>
+      <div id="geruechte-bilder" style="display:none; position:absolute; top:0; left:0; width:100%; height:100%; z-index:201;">
+        <img src="Gerüchtemarker.png" alt="Gerücht 1" class="wackel-bild"
+             style="position:absolute; top:53.8%; left:25%; width:7.5%;">
+        <img src="Gerüchtemarker.png" alt="Gerücht 2" class="wackel-bild"
+             style="position:absolute; top:39.7%; left:72.5%; width:7.5%;">
+        <img src="Gerüchtemarker.png" alt="Gerücht 1" class="wackel-bild"
+             style="position:absolute; top:59.3%; left:72.5%; width:7.5%;">
+      </div>
+    </div>
+    <img src="IWD Marker Bryn Shander.png" alt="Bryn Shander Marker"
+         class="blinken-marker"
+         style="position:absolute; top:-0.5%; left:0%; width:100%; height:100%; z-index:100; pointer-events:none;">
+
+    <!-- Klickbare Orte -->
+    <div class="location" style="top:46.3%; left:10.625%; width:3.75%; height:4.167%;" data-ort="Bremen"></div>
+    <div class="location" style="top:60.8%; left:25%; width:5%; height:5.556%;" data-ort="Bryn Shander"></div>
+    <div class="location" style="top:47.7%; left:73.125%; width:3.75%; height:4.167%;" data-ort="Caer-Dineval"></div>
+    <div class="location" style="top:33.9%; left:80.625%; width:3.75%; height:4.167%;" data-ort="Caer-Konig"></div>
+    <div class="location" style="top:83.6%; left:35.625%; width:3.75%; height:4.167%;" data-ort="Dougans Bucht"></div>
+    <div class="location" style="top:75.3%; left:45.625%; width:3.75%; height:4.167%;" data-ort="Gutanger"></div>
+    <div class="location" style="top:66.3%; left:72.5%; width:5%; height:5.556%;" data-ort="Osthafen"></div>
+    <div class="location" style="top:52.5%; left:15%; width:5%; height:5.556%;" data-ort="Targos"></div>
+    <div class="location" style="top:33.1%; left:40%; width:5%; height:5.556%;" data-ort="Termalaine"></div>
+    <div class="location" style="top:28.3%; left:33.125%; width:3.75%; height:4.167%;" data-ort="Waldheim"></div>
+    <!-- Füge hier weitere Orte hinzu -->
+  </div>
+
+  <div id="button-container" style="display: flex; justify-content: space-between; align-items: stretch; margin-top: 20px;">
+    <div class="button-group left" style="display: flex; flex-direction: column; gap: 20px;">
+      <img src="Button ZS aktiv.png" alt="Zehn-Städte" class="img-btn deaktiviert" style="pointer-events: none;">
+      <img src="Button EWT aktiv.png" alt="Eiswindtal" class="img-btn" onclick="alert('Button 2!')">
+    </div>
+    <div class="button-group right" style="display: flex; flex-direction: column; gap: 20px;">
+      <img src="Button AQ aktiv.png" alt="Aktive Quests" class="img-btn">
+      <img src="Button GK aktiv.png" alt="Gerüchteküche" class="img-btn">
+    </div>
+  </div>
+
+  <script>
+    // Zuordnung: Ort -> Bilddatei
+    const ortBilder = {
+      "Bremen": "IWD TT Bremen.png",
+      "Bryn Shander": "IWD TT Bryn Shander.png",
+      "Caer-Dineval": "IWD TT Caer-Dineval.png",
+      "Caer-Konig": "IWD TT Caer-Konig.png",
+      "Dougans Bucht": "IWD TT Dougans Bucht.png",
+      "Gutanger": "IWD TT Gutanger.png",
+      "Osthafen": "IWD TT Osthafen.png",
+      "Targos": "IWD TT Targos.png",
+      "Termalaine": "IWD TT Termalaine.png",
+      "Waldheim": "IWD TT Waldheim.png"
+    };
+
+    const hauptBild = document.getElementById("Zehn-Städte");
+
+    document.querySelectorAll('.location').forEach(function(el) {
+      el.addEventListener('click', function() {
+        const ort = el.dataset.ort;
+        if (ortBilder[ort]) {
+          hauptBild.src = ortBilder[ort];
+        }
+      });
+    });
+
+    // Button 3 (Aktive Quests)
+    const button3 = document.querySelector('img[alt="Aktive Quests"]');
+    const geheimeBilder = document.getElementById('geheime-bilder');
+    const geruechteBilder = document.getElementById('geruechte-bilder');
+    const buttons = document.querySelectorAll('.img-btn');
+    let geheimAktiv = false;
+
+    // Bildquellen für Button 3
+    const button3Normal = "Button AQ aktiv.png";
+    const button3Aktiv = "Button Zurück.png"; // Passe den Dateinamen ggf. an
+
+    button3.addEventListener('click', function toggleGeheim() {
+      geheimAktiv = !geheimAktiv;
+      if (geheimAktiv) {
+        // Zeige geheime Bilder
+        geheimeBilder.style.display = 'block';
+        geruechteBilder.style.display = 'none';
+        // Button 3 bekommt anderes Bild
+        button3.src = button3Aktiv;
+        // Alle anderen Buttons deaktivieren
+        buttons.forEach(btn => {
+          if (btn !== button3) {
+            btn.style.filter = 'grayscale(100%)';
+            btn.style.opacity = '0.7';
+            btn.style.cursor = 'not-allowed';
+            btn.onclick = null;
+            btn.style.pointerEvents = 'none';
+          }
+        });
+        // Button 3 bleibt aktiv und normal
+        button3.style.filter = 'none';
+        button3.style.cursor = 'pointer';
+        button3.style.pointerEvents = 'auto';
+      } else {
+        // Verstecke geheime Bilder
+        geheimeBilder.style.display = 'none';
+        geruechteBilder.style.display = 'none'; // Verstecke auch die Gerüchte-Bilder
+        // Button 3 bekommt wieder das normale Bild
+        button3.src = button3Normal;
+        // Alle Buttons wieder aktivieren
+        buttons.forEach(btn => {
+          btn.style.filter = '';
+          btn.style.opacity = ''; // <--- opacity zurücksetzen
+          btn.style.cursor = 'pointer';
+          btn.style.pointerEvents = 'auto';
+          // Optional: Onclick für andere Buttons wiederherstellen, falls nötig
+        });
+      }
+    });
+
+    // Button 4 (Gerüchteküche)
+    const button4 = document.querySelector('img[alt="Gerüchteküche"]');
+    let geruechteAktiv = false;
+
+    // Bildquellen für Button 4
+    const button4Normal = "Button GK aktiv.png";
+    const button4Aktiv = "Button Zurück.png"; // Passe ggf. an
+
+    button4.addEventListener('click', function toggleGeruechte() {
+      geruechteAktiv = !geruechteAktiv;
+      if (geruechteAktiv) {
+        geruechteBilder.style.display = 'block';
+        geheimeBilder.style.display = 'none'; // andere Gruppe ausblenden
+        button4.src = button4Aktiv;
+        buttons.forEach(btn => {
+          if (btn !== button4) {
+            btn.style.filter = 'grayscale(100%)';
+            btn.style.opacity = '0.7';
+            btn.style.cursor = 'not-allowed';
+            btn.onclick = null;
+            btn.style.pointerEvents = 'none';
+          }
+        });
+        button4.style.filter = 'none';
+        button4.style.cursor = 'pointer';
+        button4.style.pointerEvents = 'auto';
+        // Falls Button 3 noch aktiv ist, zurücksetzen:
+        geheimAktiv = false;
+        button3.src = button3Normal;
+      } else {
+        geruechteBilder.style.display = 'none';
+        button4.src = button4Normal;
+        buttons.forEach(btn => {
+          btn.style.filter = '';
+          btn.style.opacity = '';
+          btn.style.cursor = 'pointer';
+          btn.style.pointerEvents = 'auto';
+        });
+      }
+    });
+  </script>
+</body>
+</html>
